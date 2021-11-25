@@ -44,7 +44,7 @@ static inline void utl_init_list(utl_list_t* list, uint32_t bytes_per_element) {
 
 static inline utl_list_t* utl_create_list(uint32_t bytes_per_element) {
 
-	utl_list_t* list = malloc(sizeof(utl_list_t));
+	utl_list_t* list = (utl_list_t*) malloc(sizeof(utl_list_t));
 	utl_init_list(list, bytes_per_element);
 
 	return list;
@@ -55,7 +55,7 @@ extern void utl_list_push(utl_list_t* list, void* element);
 
 static inline void* utl_list_first(utl_list_t* list) {
 
-	utl_list_node_t* node = utl_id_vector_get(&list->nodes, list->first);
+	utl_list_node_t* node = (utl_list_node_t*)utl_id_vector_get(&list->nodes, list->first);
 
 	return node->element;
 
@@ -64,7 +64,7 @@ static inline void* utl_list_first(utl_list_t* list) {
 static inline void utl_list_shift(utl_list_t* list) {
 
 	uint32_t node_id = list->first;
-	utl_list_node_t* node = utl_id_vector_get(&list->nodes, node_id);
+	utl_list_node_t* node = (utl_list_node_t*)utl_id_vector_get(&list->nodes, node_id);
 	list->first = node->next;
 	list->length--;
 

@@ -19,11 +19,11 @@ typedef struct {
 #define UTL_VECTOR_DEFAULT(name, type, ...) const type name ##_default[] = {__VA_ARGS__}; utl_vector_t name = { .array = (byte_t*) name ##_default, .size = sizeof(name ##_default) / sizeof(name ##_default[0]), .capacity = 0, .bytes_per_element = sizeof(type) };
 
 static inline utl_vector_t* utl_create_vector(uint32_t bytes_per_element, uint32_t capacity) {
-	
-	utl_vector_t* vector = malloc(sizeof(utl_vector_t));
+
+	utl_vector_t* vector = (utl_vector_t*)malloc(sizeof(utl_vector_t));
 
 	utl_vector_t init = {
-		.array = malloc((size_t) capacity * bytes_per_element),
+		.array = (byte_t*)malloc((size_t) capacity * bytes_per_element),
 		.size = 0,
 		.capacity = capacity,
 		.bytes_per_element = bytes_per_element
@@ -49,16 +49,16 @@ static inline void utl_init_vector(utl_vector_t* vector, uint32_t bytes_per_elem
 }
 
 static inline void utl_vector_resize(utl_vector_t* vector, uint32_t new_capacity) {
-	
+
 	if (vector->capacity != 0) {
-		vector->array = realloc(vector->array, (size_t) vector->bytes_per_element * new_capacity);
+		vector->array = (byte_t*)realloc(vector->array, (size_t) vector->bytes_per_element * new_capacity);
 	} else {
 		if (vector->size > 0) {
 			void* newarr = malloc((size_t) vector->bytes_per_element * new_capacity);
 			memcpy(newarr, vector->array, (size_t) vector->bytes_per_element * vector->size);
-			vector->array = newarr;
+			vector->array = (byte_t *)newarr;
 		} else {
-			vector->array = malloc((size_t) vector->bytes_per_element * new_capacity);
+			vector->array = (byte_t *)malloc((size_t) vector->bytes_per_element * new_capacity);
 		}
 	}
 	vector->capacity = new_capacity;
@@ -66,7 +66,7 @@ static inline void utl_vector_resize(utl_vector_t* vector, uint32_t new_capacity
 }
 
 static inline void* utl_vector_push(utl_vector_t* vector, const void* element) {
-	
+
 	if (vector->size >= vector->capacity) {
 		utl_vector_resize(vector, (vector->size > 0 ? vector->size * 2 : 2));
 	}
@@ -79,7 +79,7 @@ static inline void* utl_vector_push(utl_vector_t* vector, const void* element) {
 }
 
 static inline void* utl_vector_get(const utl_vector_t* vector, uint32_t idx) {
-	
+
 	if (vector == NULL) return NULL;
 
 	if (idx > vector->size) return NULL;
@@ -89,7 +89,7 @@ static inline void* utl_vector_get(const utl_vector_t* vector, uint32_t idx) {
 }
 
 static inline void utl_vector_shift(utl_vector_t* vector) {
-	
+
 	if (vector == NULL) return;
 
 	if (vector->size > 0) {

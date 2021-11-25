@@ -340,7 +340,7 @@ bool phd_handle_click_window(ltg_client_t* client, pck_packet_t* packet) {
 			case 2: { // number keys
 				if (clicked.slot != NULL && player->carried.type == mat_item_air) {
 
-					// kick hacked clients trying to wreak havoc					
+					// kick hacked clients trying to wreak havoc
 					if (button > 8) return false;
 
 					itm_item_t* target = &player->hotbar[button];
@@ -458,7 +458,7 @@ bool phd_handle_click_window(ltg_client_t* client, pck_packet_t* packet) {
 	}
 
 	itm_from_packet(packet, &item);
-	
+
 	// TODO remove this
 	phd_send_player_inventory(client);
 
@@ -541,7 +541,7 @@ bool phd_handle_player_position_and_look(ltg_client_t* client, pck_packet_t* pac
 	const float64_t x = pck_read_float64(packet);
 	const float64_t y = pck_read_float64(packet);
 	const float64_t z = pck_read_float64(packet);
-	
+
 	const float32_t yaw = pck_read_float32(packet);
 	const float32_t pitch = pck_read_float32(packet);
 
@@ -559,7 +559,7 @@ bool phd_handle_player_position_and_look(ltg_client_t* client, pck_packet_t* pac
 		phd_update_sent_chunks_move(old_chunk, client);
 
 	}*/
-	
+
 	return true;
 
 }
@@ -674,7 +674,7 @@ bool phd_handle_entity_action(ltg_client_t* client, pck_packet_t* packet) {
 			ent_set_crouching(player, false);
 		} break;
 		case 2: { // leave bed
-		
+
 		} break;
 		case 3: { // start sprinting
 			ent_set_sprinting(player, true);
@@ -683,13 +683,13 @@ bool phd_handle_entity_action(ltg_client_t* client, pck_packet_t* packet) {
 			ent_set_sprinting(player, false);
 		} break;
 		case 5: { // start jump with horse
-		
+
 		} break;
 		case 6: { // stop jump with horse
-		
+
 		} break;
 		case 7: { // open horse inventory
-		
+
 		} break;
 		case 8: { // start flying with elytra
 			ent_set_flying_with_elytra(player, true);
@@ -703,7 +703,7 @@ bool phd_handle_entity_action(ltg_client_t* client, pck_packet_t* packet) {
 bool phd_handle_held_item_change(ltg_client_t* client, pck_packet_t* packet) {
 
 	uint16_t slot = pck_read_int16(packet);
-	
+
 	ent_player_t* player = ltg_client_get_entity(client);
 
 	ent_player_set_held_item(player, slot);
@@ -728,9 +728,9 @@ bool phd_handle_player_block_placement(ltg_client_t* client, pck_packet_t* packe
 		main_hand = 0,
 		off_hand = 1
 	} hand = pck_read_var_int(packet);
-	
+
 	pck_position_t position =  pck_read_position(packet);
-	
+
 	const wld_face_t face = pck_read_var_int(packet);
 
 	switch (face) {
@@ -784,7 +784,7 @@ bool phd_handle_player_block_placement(ltg_client_t* client, pck_packet_t* packe
 		}
 
 		const mat_item_t* item = mat_get_item_by_type(slot->type);
-		
+
 		if (item->block != mat_block_air) {
 
 			wld_chunk_t* player_chunk = player->living_entity.entity.chunk;
@@ -865,7 +865,7 @@ void phd_send_system_chat_message(ltg_client_t* client, const char* message, siz
 	pck_write_int8(packet, 1); // position
 	pck_write_int64(packet, 0); // sender
 	pck_write_int64(packet, 0);
-	
+
 	ltg_send(client, packet);
 
 }
@@ -888,7 +888,7 @@ void phd_send_player_inventory(ltg_client_t* client) {
 	pck_write_var_int(packet, 0); // state id
 
 	pck_write_var_int(packet, 46);
-	
+
 	ent_player_serialize_inventory(player, packet);
 
 	ltg_send(client, packet);
@@ -898,7 +898,7 @@ void phd_send_player_inventory(ltg_client_t* client) {
 void phd_send_plugin_message(ltg_client_t* client, const char* identifier, size_t identifier_length, const byte_t* data, size_t data_length) {
 
 	PCK_INLINE(packet, 6 + identifier_length + data_length, io_big_endian);
-	
+
 	pck_write_var_int(packet, 0x18);
 	pck_write_string(packet, identifier, identifier_length);
 	pck_write_bytes(packet, data, data_length);
@@ -931,7 +931,7 @@ void phd_send_entity_status(ltg_client_t* client, ent_entity_t* entity, uint8_t 
 }
 
 void phd_send_unload_chunk(ltg_client_t* client, wld_chunk_t* chunk) {
-	
+
 	PCK_INLINE(packet, 9, io_big_endian);
 
 	pck_write_var_int(packet, 0x1d);
@@ -992,7 +992,7 @@ void phd_send_chunk_data(ltg_client_t* client, wld_chunk_t* chunk) {
 		pck_packet_t* packet = phd_chunk_packet.packet;
 
 		packet->cursor = 0;
-		
+
 		pck_write_var_int(packet, 0x22);
 		pck_write_int32(packet, wld_get_chunk_x(chunk));
 		pck_write_int32(packet, wld_get_chunk_z(chunk));
@@ -1077,7 +1077,7 @@ void phd_send_chunk_data(ltg_client_t* client, wld_chunk_t* chunk) {
 					.length = 1
 				};
 				palette.array[0] = mat_get_block_default_protocol_id_by_type(mat_block_air);
-				
+
 				int8_t block_array[4096];
 
 				struct {
@@ -1141,7 +1141,7 @@ void phd_send_chunk_data(ltg_client_t* client, wld_chunk_t* chunk) {
 					}
 
 					pck_write_var_int(packet, data_array_length);
-					
+
 					utl_encode_bytes_to_longs_r(block_array, 4096, bits_per_block, (int64_t*) pck_cursor(packet));
 					packet->cursor += data_array_length << 3;
 				} else {
@@ -1152,7 +1152,7 @@ void phd_send_chunk_data(ltg_client_t* client, wld_chunk_t* chunk) {
 
 					pck_write_int8(packet, bits_per_block);
 					pck_write_var_int(packet, data_array_length); // data array length
-					
+
 					utl_encode_shorts_to_longs_r((int16_t*) wld_chunk_section_get_blocks(wld_chunk_get_section(chunk, i)), 4096, bits_per_block, (int64_t*) pck_cursor(packet));
 					packet->cursor += data_array_length << 3;
 				}
@@ -1183,17 +1183,17 @@ void phd_send_update_light(ltg_client_t* client, wld_chunk_t* chunk) {
 	pck_write_var_int(packet, wld_get_chunk_z(chunk));
 
 	pck_write_int8(packet, true); // trust edges
-	
+
 	pck_write_var_int(packet, 0); // sky light mask length
 
 	pck_write_var_int(packet, 0); // block light mask length
 
 	pck_write_var_int(packet, 0); // empty sky light mask length
-	
+
 	pck_write_var_int(packet, 0); // empty block light mask length
-	
+
 	pck_write_var_int(packet, 0); // sky light array count
-	
+
 	pck_write_var_int(packet, 0); // block light array count
 
 	ltg_send(client, packet);
@@ -1247,7 +1247,7 @@ void phd_send_join_game(ltg_client_t* client) {
 	pck_write_bytes(packet, dimension_codec->bytes, dimension_codec->size);
 
 	pck_write_string(packet, player_world->name.value, player_world->name.length);
-	
+
 	// hash seed
 
 	EVP_MD_CTX* hash = EVP_MD_CTX_create();
@@ -1260,7 +1260,7 @@ void phd_send_join_game(ltg_client_t* client) {
 	EVP_MD_CTX_destroy(hash);
 
 	pck_write_int64(packet, *((uint64_t*) seed_hash)); // hashed seed
-	
+
 	pck_write_var_int(packet, ltg_get_online_max(sky_get_listener()));
 	pck_write_var_int(packet, sky_get_render_distance()); // view distance
 	pck_write_int8(packet, sky_is_reduced_debug_info()); // reduced debug info
@@ -1289,7 +1289,7 @@ void phd_send_join_game(ltg_client_t* client) {
 	phd_send_initialize_world_border(client, player_world);
 	phd_send_time_update(client, player_world);
 	phd_send_spawn_position(client);
-	
+
 	phd_send_player_position_and_look(client);
 
 	phd_send_set_experience(client);
@@ -1345,7 +1345,7 @@ void phd_send_entity_position_and_rotation(ltg_client_t* client, ent_living_enti
 }
 
 void phd_send_entity_rotation(ltg_client_t* client, ent_living_entity_t* entity) {
-	
+
 	PCK_INLINE(packet, 9, io_big_endian);
 
 	pck_write_var_int(packet, 0x2b);
@@ -1387,7 +1387,7 @@ void phd_send_player_info_add_players(ltg_client_t* client) {
 	pck_write_var_int(packet, 0);
 	pck_write_var_int(packet, online_count);
 
-	
+
 	const uint32_t online_length = ltg_get_online_length(sky_get_listener());
 	for (uint32_t i = 0; i < online_length; ++i) {
 		ltg_client_t* player = ltg_get_online_client(sky_get_listener(), i);
@@ -1407,11 +1407,11 @@ void phd_send_player_info_add_players(ltg_client_t* client) {
 			} else {
 				pck_write_var_int(packet, 0);
 			}
-			
+
 			ent_player_t* player_ent = ltg_client_get_entity(player);
 
 			pck_write_var_int(packet, ent_player_get_gamemode(player_ent)); // game mode
-			
+
 			pck_write_var_int(packet, ltg_client_get_ping(player)); // ping
 			pck_write_int8(packet, 0); // has display name
 
@@ -1469,7 +1469,7 @@ void phd_send_player_info_update_latency(ltg_client_t* client) {
 	pck_write_var_int(packet, 0x36);
 	pck_write_var_int(packet, 2); // update latency
 	pck_write_var_int(packet, online_count);
-	
+
 	const uint32_t online_length = ltg_get_online_length(sky_get_listener());
 	for (uint32_t i = 0; i < online_length; ++i) {
 		ltg_client_t* player = ltg_get_online_client(sky_get_listener(), i);
@@ -1540,7 +1540,7 @@ void phd_send_unlock_recipes(ltg_client_t* client) {
 	pck_write_int8(packet, false); // blast furnace recipe book filter active
 	pck_write_int8(packet, false); // smoker recipe book open
 	pck_write_int8(packet, false); // smoker recipe book filter active
-	
+
 	pck_write_var_int(packet, 0); // array 1
 
 	pck_write_var_int(packet, 0); // array 2
@@ -1575,7 +1575,7 @@ void phd_send_entity_head_look(ltg_client_t* client, ent_living_entity_t* entity
 }
 
 void phd_send_held_item_change(ltg_client_t* client) {
-	
+
 	PCK_INLINE(packet, 2, io_big_endian);
 
 	ent_player_t* player = ltg_client_get_entity(client);
@@ -1588,7 +1588,7 @@ void phd_send_held_item_change(ltg_client_t* client) {
 }
 
 void phd_send_update_view_position(ltg_client_t* client) {
-	
+
 	PCK_INLINE(packet, 11, io_big_endian);
 
 	ent_player_t* player = ltg_client_get_entity(client);
@@ -1606,9 +1606,9 @@ void phd_send_update_view_position(ltg_client_t* client) {
 }
 
 void phd_send_update_view_position_to(ltg_client_t* client, int32_t x, int32_t z) {
-	
+
 	PCK_INLINE(packet, 11, io_big_endian);
-	
+
 	pck_write_var_int(packet, 0x49);
 	pck_write_var_int(packet, x);
 	pck_write_var_int(packet, z);
@@ -1678,7 +1678,7 @@ void phd_send_time_update(ltg_client_t* client, wld_world_t* world) {
 void phd_send_declare_recipes(ltg_client_t* client) {
 
 	PCK_INLINE(packet, 6 + rec_recipes.size * 128, io_big_endian);
-	
+
 	pck_write_var_int(packet, 0x65);
 	pck_write_var_int(packet, rec_recipes.size);
 
@@ -1784,7 +1784,7 @@ void phd_update_sent_chunks(ltg_client_t* client) {
 }
 
 void phd_update_sent_chunks_view_distance(ltg_client_t* client, uint8_t view_distance) {
-	
+
 	const wld_chunk_t* chunk = ent_get_chunk(ent_player_get_entity(ltg_client_get_entity(client)));
 
 	if (ltg_client_get_render_distance(client) > view_distance) {
@@ -1810,7 +1810,7 @@ void phd_update_sent_chunks_view_distance(ltg_client_t* client, uint8_t view_dis
 }
 
 void phd_update_sent_chunks_move(const wld_chunk_t* old_chunk, ltg_client_t* client) {
-	
+
 	phd_send_update_view_position(client);
 
 	const wld_chunk_t* chunk = ent_get_chunk(ent_player_get_entity(ltg_client_get_entity(client)));
@@ -1826,7 +1826,7 @@ void phd_update_sent_chunks_move(const wld_chunk_t* old_chunk, ltg_client_t* cli
 	assert(x != old_x || z != old_z);
 
 	if (x > old_x) {
-		
+
 		{ // render chunks
 			const int32_t o_x = -ltg_client_get_render_distance(client);
 			const int32_t n_x = ltg_client_get_render_distance(client) + 1;
@@ -1884,7 +1884,7 @@ void phd_update_sent_chunks_move(const wld_chunk_t* old_chunk, ltg_client_t* cli
 		{
 			const int32_t o_z = -ltg_client_get_render_distance(client);
 			const int32_t n_z = ltg_client_get_render_distance(client) + 1;
-			
+
 			for (int32_t c_x = -ltg_client_get_render_distance(client); c_x <= ltg_client_get_render_distance(client); ++c_x) {
 				phd_update_unsubscribe_chunk(client, wld_relative_chunk(old_chunk, c_x, o_z));
 				phd_update_subscribe_chunk(client, wld_relative_chunk(old_chunk, c_x, n_z));
@@ -1910,7 +1910,7 @@ void phd_update_sent_chunks_move(const wld_chunk_t* old_chunk, ltg_client_t* cli
 		{
 			const int32_t o_z = ltg_client_get_render_distance(client);
 			const int32_t n_z = -ltg_client_get_render_distance(client) - 1;
-			
+
 			for (int32_t c_x = -ltg_client_get_render_distance(client); c_x <= ltg_client_get_render_distance(client); ++c_x) {
 				phd_update_unsubscribe_chunk(client, wld_relative_chunk(old_chunk, c_x, o_z));
 				phd_update_subscribe_chunk(client, wld_relative_chunk(old_chunk, c_x, n_z));
@@ -1938,7 +1938,7 @@ void phd_update_sent_chunks_move(const wld_chunk_t* old_chunk, ltg_client_t* cli
 }
 
 void phd_update_sent_chunks_leave(ltg_client_t* client) {
-	
+
 	const wld_chunk_t* chunk = ent_get_chunk(ent_player_get_entity(ltg_client_get_entity(client)));
 
 	const uint8_t server_render_distance = sky_get_render_distance();

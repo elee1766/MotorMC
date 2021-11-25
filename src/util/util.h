@@ -73,7 +73,7 @@ static inline void utl_write_byte_hex(char* str, uint8_t val) {
 	str[1] = utl_hexmap[val & 0x0F];
 }
 
-static inline void utl_read_hex_bytes(byte_t* restrict out, const char* restrict str, size_t size) {
+static inline void utl_read_hex_bytes(byte_t* __restrict out, const char* __restrict str, size_t size) {
 
 	const byte_t asciihex[] = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // ........
@@ -150,7 +150,7 @@ extern char *stpcpy(char *__restrict__ dest, const char *__restrict__ src);
 static inline uint32_t utl_hash(const char* string) {
 
 	uint32_t hash = 5381;
-	
+
 	for (;;) {
 		switch (*string) {
 			case '\0': {

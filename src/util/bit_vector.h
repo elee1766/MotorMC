@@ -15,7 +15,7 @@ typedef struct {
 
 static inline utl_bit_vector_t* utl_create_bit_vector() {
 
-	utl_bit_vector_t* vector = malloc(sizeof(utl_bit_vector_t));
+	utl_bit_vector_t* vector = (utl_bit_vector_t*)malloc(sizeof(utl_bit_vector_t));
 	utl_init_vector(&vector->vector, sizeof(byte_t));
 
 	return vector;
@@ -33,7 +33,7 @@ static inline bool utl_bit_vector_test_bit(utl_bit_vector_t* vector, uint32_t bi
 	if (vector->vector.size > (bit >> 3)) {
 
 		const byte_t byte = UTL_VECTOR_GET_AS(byte_t, &vector->vector, bit >> 3);
-		
+
 		return ((byte & 0x7) | (1 << bit)) ? true : false;
 
 	}
@@ -51,7 +51,7 @@ static inline void utl_bit_vector_expand(utl_bit_vector_t* vector, uint32_t to) 
 	}
 
 	if (vector->vector.size <= to) {
-		
+
 		memset(vector->vector.array + vector->vector.size, 0, to + 1);
 		vector->vector.size = to + 1;
 
@@ -60,7 +60,7 @@ static inline void utl_bit_vector_expand(utl_bit_vector_t* vector, uint32_t to) 
 }
 
 static inline void utl_bit_vector_set_bit(utl_bit_vector_t* vector, uint32_t bit) {
-	
+
 	utl_bit_vector_expand(vector, bit >> 3);
 
 	byte_t* byte = utl_vector_get(&vector->vector, bit >> 3);
@@ -70,7 +70,7 @@ static inline void utl_bit_vector_set_bit(utl_bit_vector_t* vector, uint32_t bit
 }
 
 static inline void utl_bit_vector_reset_bit(utl_bit_vector_t* vector, uint32_t bit) {
-	
+
 	utl_bit_vector_expand(vector, bit >> 3);
 
 	byte_t* byte = utl_vector_get(&vector->vector, bit >> 3);
@@ -107,7 +107,7 @@ static inline void utl_bit_vector_foreach(utl_bit_vector_t* vector, void (*const
 	const uint32_t size = vector->vector.size;
 
 	for (uint32_t i = 0; i < size; ++i) {
-		
+
 		byte_t byte = UTL_VECTOR_GET_AS(byte_t, &vector->vector, i);
 
 		while (byte) {
@@ -122,11 +122,11 @@ static inline void utl_bit_vector_foreach(utl_bit_vector_t* vector, void (*const
 static inline void utl_bit_vector_lock_foreach(utl_bit_vector_t* vector, pthread_mutex_t* mutex, void (*const function) (uint32_t, void*), void* input) {
 
 	pthread_mutex_lock(mutex);
-	
+
 	const uint32_t size = vector->vector.size;
 
 	for (uint32_t i = 0; i < size; ++i) {
-			
+
 		byte_t byte = UTL_VECTOR_GET_AS(byte_t, &vector->vector, i);
 
 		pthread_mutex_unlock(mutex);
@@ -145,11 +145,11 @@ static inline void utl_bit_vector_lock_foreach(utl_bit_vector_t* vector, pthread
 }
 
 static inline void utl_bit_vector_or_foreach(utl_bit_vector_t* v1, utl_bit_vector_t* v2, void (*const function) (uint32_t, void*), void* input) {
-	
+
 	const uint32_t size = UTL_MAX(v1->vector.size, v2->vector.size);
 
 	for (uint32_t i = 0; i < size; ++i) {
-		
+
 		byte_t byte = 0;
 
 		if (i < v1->vector.size) {
@@ -169,11 +169,11 @@ static inline void utl_bit_vector_or_foreach(utl_bit_vector_t* v1, utl_bit_vecto
 }
 
 static inline void utl_bit_vector_xor_foreach(utl_bit_vector_t* v1, utl_bit_vector_t* v2, pthread_mutex_t* m1, pthread_mutex_t* m2, void (*const function) (uint32_t, void*), void* input) {
-	
+
 	const uint32_t size = UTL_MAX(v1->vector.size, v2->vector.size);
 
 	for (uint32_t i = 0; i < size; ++i) {
-		
+
 		byte_t byte = 0;
 
 		if (i < v1->vector.size) {

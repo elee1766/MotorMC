@@ -98,7 +98,7 @@ static inline void itm_serialize(pck_packet_t* packet, const itm_item_t* item) {
 		pck_write_int8(packet, true);
 		pck_write_var_int(packet, item->type);
 		pck_write_int8(packet, item->count);
-		
+
 		pck_write_int8(packet, 0); // TODO nbt
 
 	}

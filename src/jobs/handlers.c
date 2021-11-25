@@ -7,7 +7,7 @@
 #include "../world/entity/living/player/player.h"
 
 bool job_handle_keep_alive(job_payload_t* payload) {
-	
+
 	// what if the client disconnects by the time this is handled? TODO
 
 	struct timespec time;
@@ -67,7 +67,7 @@ static inline void job_send_entity(uint32_t client_id, void* entity) {
 }
 
 bool job_handle_player_join(job_payload_t* payload) {
-	
+
 	// what if the client disconnects by the time this is handled? TODO
 
 	log_info("%s joined the game", UTL_STRTOCSTR(ltg_client_get_username(payload->client)));
@@ -117,7 +117,7 @@ bool job_handle_player_leave(job_payload_t* payload) {
 
 	char out[128];
 	const size_t out_len = cht_write_translation(&translation, out);
-	
+
 	const uint32_t online_length = ltg_get_online_length(sky_get_listener());
 	for (uint32_t i = 0; i < online_length; ++i) {
 		ltg_client_t* client = ltg_get_online_client(sky_get_listener(), i);
@@ -150,7 +150,7 @@ bool job_handle_send_update_pings(__attribute__((unused)) job_payload_t* payload
 bool job_handle_tick_region(job_payload_t* payload) {
 
 	// TODO what if this region is unloaded by the time this is handled?
-	
+
 	for (uint32_t i = 0; i < 32 * 32; ++i) {
 
 		wld_chunk_t* chunk = wld_region_get_chunk_by_idx(payload->region, i);
@@ -223,14 +223,14 @@ bool job_handle_dig_block(job_payload_t* payload) {
 }
 
 static inline void job_update_entity_move(uint32_t client_id, void* args) {
-	
+
 	job_payload_t* payload = args;
 	ent_entity_t* entity = payload->entity_move.entity;
-	
+
 	ltg_client_t* client = ltg_get_client_by_id(sky_get_listener(), client_id);
 
 	if (client == NULL) return;
-	
+
 	if (ent_get_type(entity) == ent_player && ent_player_get_entity(ltg_client_get_entity(client)) == entity) {
 		if (ent_get_chunk(entity) != payload->entity_move.initial_chunk) {
 			phd_update_sent_chunks_move(payload->entity_move.initial_chunk, client);
@@ -242,7 +242,7 @@ static inline void job_update_entity_move(uint32_t client_id, void* args) {
 }
 
 bool job_handle_entity_move(job_payload_t* payload) {
-	
+
 	// what if the entity has been destroyed by the time this is handled? TODO
 
 	ent_entity_t* entity = payload->entity_move.entity;
@@ -271,14 +271,14 @@ bool job_handle_entity_move(job_payload_t* payload) {
 }
 
 static inline void job_update_entity_teleport(uint32_t client_id, void* args) {
-	
+
 	job_payload_t* payload = args;
 	ent_entity_t* entity = payload->entity_teleport.entity;
-	
+
 	ltg_client_t* client = ltg_get_client_by_id(sky_get_listener(), client_id);
-	
+
 	if (client == NULL) return;
-	
+
 	if (ent_get_type(entity) == ent_player && ent_player_get_entity(ltg_client_get_entity(client)) == entity) {
 		if (ent_get_chunk(entity) != payload->entity_teleport.initial_chunk) {
 			// TODO phd_update_sent_chunks_teleport(client);
@@ -297,13 +297,13 @@ bool job_handle_entity_teleport(job_payload_t* payload) {
 	entity->position.x = payload->entity_teleport.x;
 	entity->position.y = payload->entity_teleport.y;
 	entity->position.z = payload->entity_teleport.z;
-	
+
 	ent_remove_chunk(entity);
 
 	entity->on_ground = false;
 
 	// TODO physics
-	
+
 	if (!wld_in_chunk(ent_get_chunk(entity), ent_get_block_x(entity), ent_get_block_z(entity))) {
 		// change chunk
 		ent_set_chunk(entity);
@@ -317,12 +317,12 @@ bool job_handle_entity_teleport(job_payload_t* payload) {
 }
 
 static inline void job_update_living_entity_look(uint32_t client_id, void* args) {
-	
+
 	job_payload_t* payload = args;
 	ent_living_entity_t* entity = payload->living_entity_look.entity;
-	
+
 	ltg_client_t* client = ltg_get_client_by_id(sky_get_listener(), client_id);
-	
+
 	if (client == NULL) return;
 
 	if (ent_get_type(ent_le_get_entity(entity)) == ent_player && ent_player_get_le(ltg_client_get_entity(client)) == entity) {
@@ -356,7 +356,7 @@ static inline void job_update_living_entity_move_look(uint32_t client_id, void* 
 	ent_living_entity_t* entity = payload->living_entity_move_look.entity;
 
 	ltg_client_t* client = ltg_get_client_by_id(sky_get_listener(), client_id);
-	
+
 	if (client == NULL) return;
 
 	if (ent_get_type(ent_le_get_entity(entity)) == ent_player && ent_player_get_le(ltg_client_get_entity(client)) == entity) {
@@ -367,7 +367,7 @@ static inline void job_update_living_entity_move_look(uint32_t client_id, void* 
 		phd_send_entity_position_and_rotation(client, entity, payload->living_entity_move_look.d_x, payload->living_entity_move_look.d_y, payload->living_entity_move_look.d_z);
 		phd_send_entity_head_look(client, entity);
 	}
-	
+
 }
 
 bool job_handle_living_entity_move_look(job_payload_t* payload) {
@@ -398,14 +398,14 @@ bool job_handle_living_entity_move_look(job_payload_t* payload) {
 }
 
 static inline void job_update_living_entity_teleport_look(uint32_t client_id, void* args) {
-	
+
 	job_payload_t* payload = args;
 	ent_living_entity_t* entity = payload->living_entity_teleport_look.entity;
-	
+
 	ltg_client_t* client = ltg_get_client_by_id(sky_get_listener(), client_id);
-	
+
 	if (client == NULL) return;
-	
+
 	if (ent_get_type(ent_le_get_entity(entity)) == ent_player && ent_player_get_le(ltg_client_get_entity(client)) == entity) {
 		if (ent_get_chunk(ent_le_get_entity(entity)) != payload->living_entity_teleport_look.initial_chunk) {
 			// TODO phd_update_sent_chunks_teleport(client);
@@ -430,7 +430,7 @@ bool job_handle_living_entity_teleport_look(job_payload_t* payload) {
 	entity->rotation.pitch = payload->living_entity_teleport_look.pitch;
 
 	entity->entity.on_ground = false;
-	
+
 	ent_remove_chunk(ent_le_get_entity(entity));
 
 	// TODO physics
@@ -453,11 +453,11 @@ static inline void job_update_living_entity_damage(uint32_t client_id, void* arg
 	ent_living_entity_t* entity = payload->living_entity_damage.entity;
 
 	ltg_client_t* client = ltg_get_client_by_id(sky_get_listener(), client_id);
-	
+
 	if (client == NULL) return;
 
 	phd_send_entity_status(client, ent_le_get_entity(entity), 2);
-	
+
 	if (payload->living_entity_damage.damage > 0 && ent_get_type(ent_le_get_entity(entity)) == ent_player && ent_player_get_le(ltg_client_get_entity(client)) == entity) {
 		phd_send_update_health(client);
 	}
@@ -482,14 +482,14 @@ bool job_handle_tick_world(job_payload_t* payload) {
 	wld_world_t* world = payload->world;
 
 	world->age++;
-	
+
 	if (wld_is_time_progressing(world)) {
 		world->time++;
 		if (world->time >= 24000) {
 			world->time = 0;
 		}
 	}
-	
+
 	return true;
 
 }

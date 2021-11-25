@@ -31,7 +31,7 @@ typedef struct {
 
 static inline utl_dll_t* utl_create_dll() {
 
-	utl_dll_t* dll = calloc(1, sizeof(utl_dll_t));
+	utl_dll_t* dll = (utl_dll_t*)calloc(1, sizeof(utl_dll_t));
 	utl_init_id_vector(&dll->nodes, sizeof(utl_dll_node_t));
 
 	return dll;
@@ -57,7 +57,7 @@ static inline void* utl_dll_iterator_next(utl_dll_iterator_t* iterator) {
 
 	if (iterator->next_idx >= iterator->dll->length) return NULL;
 
-	utl_dll_node_t* node = utl_id_vector_get(&iterator->dll->nodes, iterator->next_node);
+	utl_dll_node_t* node = (utl_dll_node_t*)utl_id_vector_get(&iterator->dll->nodes, iterator->next_node);
 	iterator->next_idx++;
 	iterator->next_node = node->next;
 
@@ -69,7 +69,7 @@ extern uint32_t utl_dll_push(utl_dll_t* dll, void* element);
 
 static inline void* utl_dll_shift(utl_dll_t* dll) {
 
-	utl_dll_node_t* node = utl_id_vector_get(&dll->nodes, dll->first);
+	utl_dll_node_t* node = (utl_dll_node_t*)utl_id_vector_get(&dll->nodes, dll->first);
 	uint32_t node_id = dll->first;
 	dll->first = node->next;
 	dll->length--;
