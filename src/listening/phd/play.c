@@ -600,6 +600,7 @@ bool phd_handle_player_digging(ltg_client_t* client, pck_packet_t* packet) {
 	ent_player_t* player = ltg_client_get_entity(client);
 	wld_chunk_t* chunk = ent_get_chunk(ent_player_get_entity(player));
 
+
 	switch (status) {
 		case 0: { // start digging
 			if (!ent_player_is_digging_block(player)) {
@@ -1209,7 +1210,7 @@ void phd_send_join_game(ltg_client_t* client) {
 	wld_world_t* player_world = wld_get_default();
 
 	// create an entity for the player
-	ent_player_t* player = ent_alloc_player(ltg_client_get_uuid(client), player_world, wld_get_spawn_x(player_world), 256, wld_get_spawn_z(player_world));
+	ent_player_t* player = ent_alloc_player(ltg_client_get_uuid(client), player_world, wld_get_spawn_x(player_world), 56, wld_get_spawn_z(player_world));
 	ltg_client_set_entity(client, player);
 	ent_register_entity(ent_player_get_entity(player));
 
@@ -1309,6 +1310,37 @@ void phd_send_join_game(ltg_client_t* client) {
 	job_add(job_new(job_player_join, (job_payload_t) { .client = client }));
 
 }
+
+void phd_send_spawn_entity(ltg_client_t* client, ent_entity_t* entity) {
+	PCK_INLINE(packet, 80, io_big_endian);
+
+	pck_write_var_int(packet, 0x00);
+	pck_write_var_int(packet,entity->id);
+	pck_write_bytes(packet, entity->uuid, 16);
+	pck_write_var_int(packet,entity->type);
+	pck_write_float64(packet, entity->position.x);
+	pck_write_float64(packet, entity->position.y);
+	pck_write_float64(packet, entity->position.z);
+	pck_write_int8(packet,0); // TODO: pitch
+	pck_write_int8(packet,0); // TODO: yaw
+	pck_write_int32(packet,0); // TODO: Data
+	pck_write_int16(packet,0); // TODO: VelocityX
+	pck_write_int16(packet,0); // TODO: VelocityY
+	pck_write_int16(packet,0); // TODO: VelocityZ
+
+	ltg_send(client,packet);
+}
+void phd_send_entity_item_metadata(ltg_client_t* client, ent_item_t* item) {
+	PCK_INLINE(packet, 80, io_big_endian);
+
+	pck_write_var_int(packet, 0x4d);
+	pck_write_var_int(packet,item->entity.id);
+	ent_item_serialize_metadata(item,packet);
+
+	ltg_send(client,packet);
+}
+
+
 
 void phd_send_entity_position(ltg_client_t* client, ent_entity_t* entity, float64_t d_x, float64_t d_y, float64_t d_z) {
 

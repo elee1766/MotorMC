@@ -10,12 +10,17 @@
 utl_id_vector_t ent_entities = UTL_ID_VECTOR_INITIALIZER(ent_entity_t*);
 
 uint32_t ent_register_entity(ent_entity_t* entity) {
-	
+
 	uint32_t id = utl_id_vector_push(&ent_entities, &entity);
 	memcpy((uint32_t*) &entity->id, &id, sizeof(id));
 
 	pthread_mutex_init(&entity->lock, NULL);
-	
+
+	byte_t* xs = malloc(16);
+	for (int i = 0; i < 16; i++){
+		xs[i] = 1;
+	}
+	entity->uuid = xs;
 	ent_set_chunk(entity);
 
 	return entity->id;
@@ -82,9 +87,9 @@ void ent_set_chunk(ent_entity_t* entity) {
 		const uint8_t server_render_distance = sky_get_render_distance();
 
 		if (UTL_ABS(n_x - o_x) < server_render_distance && UTL_ABS(n_z - o_z) < server_render_distance) {
-			
+
 			chunk = wld_relative_chunk(entity_chunk, n_x - o_x, n_z - o_z);
-			
+
 		} else { // set absolute (o(logn))
 
 			chunk = wld_get_chunk_at(ent_get_world(entity), f_x, f_z);
@@ -97,8 +102,9 @@ void ent_set_chunk(ent_entity_t* entity) {
 
 	} else {
 		// set absolute (o(logn))
-		chunk = wld_get_chunk_at(ent_get_world(entity), f_x, f_z);
-		
+		wld_world_t* wo = ent_get_world(entity);
+		chunk = wld_get_chunk_at(wo, f_x, f_z); // LOCKING HERE!!
+
 		// if its a player, we must wait until it has been added to the server list
 		if (ent_get_type(entity) != ent_player) {
 			// spawn in chunk to listeners

@@ -22,7 +22,7 @@ static inline void sch_push_l(uint32_t id, uint32_t delay) {
 	while (delay >= sch_scheduler.tape.size) { // fill up to the delay with empty vectors
 
 		utl_vector_push(&sch_scheduler.tape, &empty);
-	
+
 	}
 
 	utl_vector_t* vector = utl_vector_get(&sch_scheduler.tape, delay);
@@ -36,7 +36,7 @@ static inline void sch_push(uint32_t id, uint32_t delay) {
 	with_lock (&sch_scheduler.lock) {
 
 		sch_push_l(id, delay);
-		
+
 	}
 
 }
@@ -79,7 +79,7 @@ void sch_cancel(uint32_t id) {
 }
 
 void sch_tick() {
-	
+
 	with_lock (&sch_scheduler.lock) {
 
 		// get schedule

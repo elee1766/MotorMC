@@ -61,7 +61,7 @@ struct wld_chunk {
 };
 
 struct wld_region {
-	
+
 	wld_world_t* const world; // typeof wld_world_t*
 
 	uint32_t tick;
@@ -104,9 +104,9 @@ struct wld_world {
 		int32_t z;
 
 	} spawn;
-	
+
 	uint32_t tick;
-	
+
 	_Atomic uint16_t time;
 	const uint16_t id;
 
@@ -220,7 +220,7 @@ static inline void wld_chunk_remove_entity(wld_chunk_t* chunk, uint32_t entity) 
 }
 
 static inline bool wld_chunk_has_subscriber(wld_chunk_t* chunk, uint32_t client) {
-	
+
 	bool has_subscriber = false;
 
 	with_lock (&chunk->lock) {
@@ -334,13 +334,13 @@ static inline int16_t* wld_chunk_get_highest_world_surface(wld_chunk_t* chunk) {
 }
 
 static inline uint32_t wld_chunk_add_entity(wld_chunk_t* chunk, ent_entity_t* entity) {
-	
+
 	uint32_t chunk_node = 0;
 	with_lock (&chunk->lock) {
 		chunk_node = utl_id_vector_push(&chunk->entities, &entity);
 	}
 	return chunk_node;
-	
+
 }
 
 static inline uint32_t wld_chunk_get_entity_count(wld_chunk_t* chunk) {

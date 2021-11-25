@@ -12,11 +12,13 @@
 struct ent_entity {
 
 	wld_position_t position;
-	
+
 	wld_chunk_t* chunk;
 	uint32_t chunk_node;
 
 	const uint32_t id;
+	const byte_t* uuid;
+
 	const ent_type_t type;
 
 	pthread_mutex_t lock;
@@ -31,7 +33,7 @@ struct ent_entity {
 	bool swimming : 1;
 	bool invisible : 1;
 	bool glowing : 1;
-	
+
 	bool flying_with_elytra : 1;
 	bool custom_name_visible : 1;
 	bool silent : 1;
@@ -77,7 +79,7 @@ static inline uint64_t ent_get_block_z(ent_entity_t* entity) {
 }
 
 static inline wld_chunk_t* ent_get_chunk(ent_entity_t* entity) {
-	
+
 	wld_chunk_t* chunk = NULL;
 
 	with_lock (&entity->lock) {
@@ -85,7 +87,7 @@ static inline wld_chunk_t* ent_get_chunk(ent_entity_t* entity) {
 	}
 
 	return chunk;
-	
+
 }
 
 static inline wld_world_t* ent_get_world(ent_entity_t* entity) {
@@ -131,7 +133,7 @@ static inline void ent_move(ent_entity_t* entity, float64_t d_x, float64_t d_y, 
 extern void ent_set_chunk(ent_entity_t* entity);
 
 static inline void ent_set_on_ground(ent_entity_t* entity, bool on_ground) {
-	
+
 	with_lock (&entity->lock) {
 		entity->on_ground = on_ground;
 	}

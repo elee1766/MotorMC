@@ -4,6 +4,7 @@
 #include "../../io/packet/packet.h"
 #include "../../world/world.h"
 #include "../../world/entity/living/player/player.h"
+#include "../../world/entity/item/item.h"
 #include "../listening.h"
 
 extern bool phd_play(ltg_client_t*, pck_packet_t*);
@@ -57,7 +58,7 @@ extern bool phd_handle_spectate(ltg_client_t*, pck_packet_t*);
 extern bool phd_handle_player_block_placement(ltg_client_t* client, pck_packet_t* packet);
 extern bool phd_handle_use_item(ltg_client_t* client, pck_packet_t* packet);
 
-extern void phd_send_spawn_entity(ltg_client_t*);
+extern void phd_send_spawn_entity(ltg_client_t*, ent_entity_t* entity);
 extern void phd_send_spawn_experience_orb(ltg_client_t*);
 extern void phd_send_spawn_living_entity(ltg_client_t*);
 extern void phd_send_spawn_painting(ltg_client_t*);
@@ -148,7 +149,8 @@ extern void phd_send_update_view_position_to(ltg_client_t* client, int32_t x, in
 extern void phd_send_update_view_distance(ltg_client_t*);
 extern void phd_send_spawn_position(ltg_client_t* client);
 extern void phd_send_display_scoreboard(ltg_client_t*);
-extern void phd_send_entity_metadata(ltg_client_t*);
+extern void phd_send_entity_metadata(ltg_client_t* client);
+extern void phd_send_entity_item_metadata(ltg_client_t* client, ent_item_t* item);
 extern void phd_send_attach_entity(ltg_client_t*);
 extern void phd_send_entity_velocity(ltg_client_t*);
 extern void phd_send_entity_equipment(ltg_client_t*);
@@ -175,6 +177,7 @@ extern void phd_send_entity_effect(ltg_client_t*);
 extern void phd_send_declare_recipes(ltg_client_t* client);
 extern void phd_send_tags(ltg_client_t* client);
 
+#include "../../io/logger/logger.h"
 static inline void phd_update_send_entity(ltg_client_t* client, ent_entity_t* entity) {
 	if (entity != ent_player_get_entity(ltg_client_get_entity(client))) {
 		switch (ent_get_type(entity)) {
@@ -182,8 +185,11 @@ static inline void phd_update_send_entity(ltg_client_t* client, ent_entity_t* en
 				phd_send_spawn_player(client, (ent_player_t*) entity);
 				phd_send_entity_head_look(client, (ent_living_entity_t*) entity);
 			} break;
+			case ent_item: {
+				phd_send_spawn_entity(client, (ent_entity_t*) entity);
+				phd_send_entity_item_metadata(client, (ent_item_t*) entity);
+			} break;
 			default: {
-				// Do something eventually
 			} break;
 		}
 	}

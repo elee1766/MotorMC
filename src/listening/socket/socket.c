@@ -1,5 +1,6 @@
 #include "socket.h"
 #include "../../io/logger/logger.h"
+#include <asm-generic/socket.h>
 
 // everything is different between *nix and windows again, so much preprocessor, good luck (shouldn't need to be changed though, it's pretty bare-bones)
 
@@ -23,6 +24,11 @@ int32_t sck_init() {
 int32_t sck_create() {
 
 	uint64_t s = socket(AF_INET, SOCK_STREAM, 0);
+
+	int enable = 1;
+	if(setsockopt(s,SOL_SOCKET,SO_REUSEADDR,&enable, sizeof(int))<0){
+		log_error("Error creating socket");
+	}
 
 #ifdef __WINDOWS__
 	if (s == INVALID_SOCKET) {

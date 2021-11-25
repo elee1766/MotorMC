@@ -2,11 +2,12 @@
 #include "handlers.h"
 #include "../motor.h"
 #include "../util/vector.h"
+#include "../io/logger/logger.h"
 
 // TODO keep track of job traffic (increases everytime jobs aren't completed, decreases everytime they are)
 
 // default handler vectors
-UTL_VECTOR_DEFAULT(job_keep_alive_handlers, job_handler_t, 
+UTL_VECTOR_DEFAULT(job_keep_alive_handlers, job_handler_t,
 	job_handle_keep_alive
 );
 UTL_VECTOR_DEFAULT(job_global_chat_message_handlers, job_handler_t,
@@ -102,7 +103,7 @@ uint32_t job_new(job_type_t type, const job_payload_t payload) {
 }
 
 void job_add_handler(job_type_t job, job_handler_t handler) {
-	
+
 	utl_vector_push(utl_vector_get(&job_handlers, job), &handler);
 
 }
@@ -141,10 +142,11 @@ void job_handle(uint32_t id) {
 }
 
 void job_add(uint32_t id) {
-	
+
 	job_work_t* work = utl_id_vector_get(&job_board.heap.jobs, id);
 
 	work->on_board++;
+
 
 	with_lock (&job_board.queue.lock) {
 		utl_list_push(&job_board.queue.list, &id);
@@ -187,9 +189,9 @@ uint32_t job_get() {
 
 	// wait for jobs
 	with_lock (&job_board.queue.lock) {
-	
+
 		while (job_board.queue.list.length == 0) {
-		
+
 			if (sky_get_status() == sky_stopping) {
 
 				pthread_mutex_unlock(&job_board.queue.lock);
@@ -199,9 +201,9 @@ uint32_t job_get() {
 			}
 
 			pthread_cond_wait(&job_board.queue.wait, &job_board.queue.lock);
-		
+
 		}
-		
+
 		memcpy(&job, utl_list_first(&job_board.queue.list), sizeof(uint32_t));
 		utl_list_shift(&job_board.queue.list);
 

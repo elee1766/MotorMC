@@ -5,6 +5,7 @@
 #include "../io/logger/logger.h"
 #include "../motor.h"
 #include "../world/entity/living/player/player.h"
+#include "../world/entity/item/item.h"
 
 bool job_handle_keep_alive(job_payload_t* payload) {
 
@@ -215,9 +216,16 @@ bool job_handle_dig_block(job_payload_t* payload) {
 		return false;
 	}
 
+	// get the block the player broke
+
+	mat_block_type_t block_type =  wld_get_block_type_at(payload->dig_block.chunk, payload->dig_block.x, payload->dig_block.y, payload->dig_block.z);
 	// break block
 	wld_set_block_type_at(payload->dig_block.chunk, payload->dig_block.x, payload->dig_block.y, payload->dig_block.z, mat_block_air);
-
+	wld_chunk_t* chunk =  payload->dig_block.chunk;
+	ent_item_t* item = ent_alloc_item(player->living_entity.entity.position.world,payload->dig_block.x, payload->dig_block.y, payload->dig_block.z);
+	itm_set_type(&item->slot, mat_item_dirt);
+	itm_set_count(&item->slot, 1);
+	ent_register_entity(&item->entity);
 	return true;
 
 }

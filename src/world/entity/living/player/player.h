@@ -9,14 +9,14 @@
 struct ent_player {
 
 	ent_living_entity_t living_entity;
-	
+
 	const byte_t* uuid;
 
 	float32_t additional_hearts;
 	int32_t score;
-	
+
 	uint32_t digging;
-	
+
 	_Atomic float32_t saturation;
 
 	_Atomic byte_t displayed_skin_parts;
@@ -46,8 +46,8 @@ struct ent_player {
 };
 
 static inline ent_player_t* ent_alloc_player(const byte_t* uuid, wld_world_t* world, float64_t x, float64_t y, float64_t z) {
-	
-	ent_player_t* player = calloc(1, sizeof(ent_player_t));
+
+	ent_player_t* player = (ent_player_t*)calloc(1, sizeof(ent_player_t));
 	ent_type_t type = ent_player;
 	memcpy((ent_type_t*) &player->living_entity.entity.type, &type, sizeof(type));
 	player->living_entity.health = 20;
@@ -157,7 +157,7 @@ static inline void ent_player_start_digging_block(ent_player_t* player, uint32_t
 }
 
 static inline void ent_player_cancel_digging_block(ent_player_t* player) {
-	
+
 	with_lock (&ent_player_get_entity(player)->lock) {
 		sch_cancel(player->digging);
 		player->digging_block = false;
@@ -166,7 +166,7 @@ static inline void ent_player_cancel_digging_block(ent_player_t* player) {
 }
 
 static inline void ent_player_set_displayed_skin_parts(ent_player_t* player, byte_t displayed_skin_parts) {
-	
+
 	player->displayed_skin_parts = displayed_skin_parts;
 
 }
@@ -202,7 +202,7 @@ static inline uint8_t ent_player_get_food(ent_player_t* player) {
 }
 
 static inline void ent_player_serialize_inventory(ent_player_t* player, pck_packet_t* packet) {
-	
+
 	with_lock (&player->living_entity.entity.lock) {
 		// crafting slots
 		pck_write_int8(packet, false);
